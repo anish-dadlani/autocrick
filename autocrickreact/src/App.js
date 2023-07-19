@@ -36,6 +36,7 @@ import SearchTeam from "./components/search_team";
 import SearchTournaments from "./components/search_tournaments";
 import PendingRequests from "./components/pending_requests";
 import PlayerStats from "./components/PlayerStats";
+import DonatePledge from "./components/donate_pledge";
 
 function App() {
   return (
@@ -61,6 +62,7 @@ function App() {
         <Route path="/CreatePost" element={<Post />} />
         <Route path="/CreateTeam" element={<Team />} />
         <Route path="/CreateTeamMembers" element={<TeamMemers />} />
+        <Route path="/DonatePledge" element={<DonatePledge />} />
         {/* Update Routes */}
         <Route path="/MatchUpdate" element={<MatchUpdate />} />
         <Route path="/UpdateUser" element={<UpdateUser />} />
