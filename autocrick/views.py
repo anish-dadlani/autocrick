@@ -331,10 +331,28 @@ def matches_list(request):
 def post_list(request):
     try:
         posts = Post.objects.all()
-        serializer = PostSerializer(posts, many=True)
-        return Response({'posts': serializer.data})
+        data = []
+        for post in posts:
+            user = User.objects.get(username=post.created_by)
+            try:
+                profile_pic = UserProfilePic.objects.get(username=post.created_by)
+                profile_pic_url = profile_pic.file_path.url if profile_pic.file_path else None
+            except UserProfilePic.DoesNotExist:
+                profile_pic_url = None
+
+            serialized_post = {
+                'title': post.title,
+                'description': post.description,
+                'file_path': post.file_path.url if post.file_path else None,
+                'created_by': user.fullname,
+                'user_profile_picture': profile_pic_url
+            }
+            data.append(serialized_post)
+        return Response({'posts': data})
     except Exception as e:
         return Response({'error': str(e)}, status=400)
+
+
 
 @api_view(['GET'])
 def teams_list(request):
@@ -902,20 +920,20 @@ def get_tournament_schedule(request):
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
 
-
-
-
-
 @api_view(['GET'])
 def get_tournament_stats(request):
     try:
         tournament_id = request.GET.get('tournament_id')
 
-        # Retrieve all teams in the tournament
-        teams = Team.objects.all()
+        # Retrieve team IDs from pending requests for the given tournament ID
+        pending_requests = PendingRequest.objects.filter(tournament_id=tournament_id, status=1)
+        team_ids = [request.team_id for request in pending_requests]
+
+        # Filter teams based on the retrieved team IDs
+        teams = Team.objects.filter(_id__in=team_ids)
 
         # Initialize team statistics dictionary with team IDs as keys
-        team_stats = {team._id: {
+        team_stats = {team.id: {
             'team_title': team.title,
             'total_matches': 0,
             'won_matches': 0,

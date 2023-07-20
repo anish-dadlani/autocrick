@@ -4,8 +4,10 @@ import { getRoles, signup } from "../services/api";
 import "../assets/styles.css";
 import SuccessMessage from "../includes/success";
 import ErrorMessage from "../includes/error";
+import HeaderBar from "../includes/headerAuth";
+import Footer from "../includes/footer";
 
-class Signup extends Component {
+export default class Signup extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -129,7 +131,25 @@ class Signup extends Component {
     }
 
     return (
+		      <div>
+        <HeaderBar />
+        <div style={styles.container}>
+          <div style={styles.containerMain}>
       <div className="container">
+	  	                    <div
+                    style={{
+                      backgroundColor: "#FFFFFF",
+                      padding: "20px",
+                      boxShadow: "0px 2px 3.84px rgba(0, 0, 0, 0.25)",
+                      borderRadius: "10px",
+                      marginBottom: "20px",
+                      width: "100%",
+                      maxWidth: "475px",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                    }}
+                  >
         <h2>Register</h2>
         <form onSubmit={this.handleSubmit}>
           <div className="row">
@@ -208,8 +228,32 @@ class Signup extends Component {
           </p>
         </form>
       </div>
+      </div>
+	  </div>
+      </div>
+	   <Footer />
+      </div>
     );
   }
 }
 
-export default Signup;
+
+const styles = {
+  container: {
+    display: "flex",
+    minHeight: "100vh",
+    /* backgroundColor: "#f5f5f5", */
+	backgroundImage: `url('posts/background.jpg')`,
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+    backgroundColor: "#f5f5f5",
+  },
+  containerMain: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+};
