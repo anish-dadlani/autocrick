@@ -225,6 +225,11 @@ const styles = {
   container: {
     display: "flex",
     minHeight: "100vh",
+    /* backgroundColor: "#f5f5f5", */
+	backgroundImage: `url('posts/background.jpg')`,
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
     backgroundColor: "#f5f5f5",
   },
   containerMain: {

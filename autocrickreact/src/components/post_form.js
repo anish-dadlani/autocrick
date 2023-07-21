@@ -7,7 +7,6 @@ import "../assets/styles.css";
 import SuccessMessage from "../includes/success";
 import ErrorMessage from "../includes/error";
 import Dropzone from "react-dropzone";
-import axios from "axios";
 
 export default class Post extends Component {
   constructor(props) {
@@ -16,7 +15,6 @@ export default class Post extends Component {
       title: "",
       description: "",
       file_path: "",
-      uploadProgress: 0,
       created_at: "",
       showSuccessModal: false,
       showErrorModal: false,
@@ -114,7 +112,7 @@ export default class Post extends Component {
         onClose={this.hideSuccessModal}
         onGoToHomepage={() => {
           this.hideSuccessModal();
-          window.location.replace("/PostsList");
+          window.location.replace("/NewsFeed");
         }}
       />
     );
@@ -133,7 +131,7 @@ export default class Post extends Component {
   };
 
   render() {
-    const { title, description, file_path, _id, uploadProgress } = this.state;
+    const { title, description, file_path, _id } = this.state;
     const fileName = file_path && file_path.name;
     return (
       <div>
@@ -217,7 +215,6 @@ export default class Post extends Component {
                       {fileName && (
                         <div>
                           <p>Selected file: {fileName}</p>
-                          <div>Upload progress: {uploadProgress}%</div>
                         </div>
                       )}
                       <br></br>
@@ -241,6 +238,11 @@ const styles = {
   container: {
     display: "flex",
     minHeight: "100vh",
+    /* backgroundColor: "#f5f5f5", */
+	backgroundImage: `url('posts/background.jpg')`,
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
     backgroundColor: "#f5f5f5",
   },
   containerMain: {

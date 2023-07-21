@@ -1,10 +1,8 @@
 import React, { Component } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import HeaderBar from "../includes/header";
 import Footer from "../includes/footer";
 import Sidebar from "../includes/sidebar";
 import { getTournaments, get_tournament_schedule } from "../services/api";
-import { FaUserCircle } from "react-icons/fa";
 import moment from "moment";
 
 export default class TournamentScreen extends Component {
@@ -162,6 +160,11 @@ const styles = {
   container: {
     display: "flex",
     minHeight: "100vh",
+    /* backgroundColor: "#f5f5f5", */
+	backgroundImage: `url('posts/background.jpg')`,
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
     backgroundColor: "#f5f5f5",
   },
   containerMain: {

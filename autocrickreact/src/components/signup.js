@@ -57,41 +57,68 @@ export default class Signup extends Component {
     this.setState({ [event.target.name]: event.target.value });
   };
 
-  handleSubmit = (event) => {
-    event.preventDefault();
 
-    const {
-      fullname,
-      username,
-      email,
-      password,
-      contact_no,
-      role_id,
-      created_at,
-    } = this.state;
-    const userData = {
-      fullname,
-      username,
-      email,
-      password,
-      contact_no,
-      role_id,
-      created_at,
-    };
+handleSubmit = (event) => {
+  event.preventDefault();
 
-    signup(userData)
-      .then((data) => {
-        if (data.response === true) {
-          this.showSuccessModal(data.message);
-        } else {
-          this.showErrorModal(data.error);
-        }
-      })
-      .catch((error) => {
-        this.showErrorModal(error.message);
-      });
+  const {
+    fullname,
+    username,
+    email,
+    password,
+    contact_no,
+    role_id,
+    created_at,
+  } = this.state;
+
+  // Basic validation checks
+  if (!fullname || !username || !email || !password || !contact_no || !role_id) {
+    this.showErrorModal('Please fill in all required fields.');
+    return;
+  }
+
+  // Email validation
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(email)) {
+    this.showErrorModal('Please enter a valid email address.');
+    return;
+  }
+
+  // Password strength validation (you can implement your own logic)
+  if (password.length < 4) {
+    this.showErrorModal('Password must be at least 4 characters long.');
+    return;
+  }
+
+  // Contact number validation
+  const contactNoPattern = /^\d{11}$/;
+  if (!contactNoPattern.test(contact_no)) {
+    this.showErrorModal('Please enter a valid 11-digit contact number.');
+    return;
+  }
+
+  const userData = {
+    fullname,
+    username,
+    email,
+    password,
+    contact_no,
+    role_id,
+    created_at,
   };
 
+  signup(userData)
+    .then((data) => {
+      if (data.response === true) {
+        this.showSuccessModal(data.message);
+      } else {
+        this.showErrorModal(data.error);
+      }
+    })
+    .catch((error) => {
+      this.showErrorModal(error.message);
+    });
+};
   renderSuccessModal() {
     const { successMessage } = this.state;
     return (
@@ -166,7 +193,7 @@ export default class Signup extends Component {
               <div className="form-group">
                 <label>Email:</label>
                 <input
-                  type="text"
+                  type="email"
                   name="email"
                   value={email}
                   onChange={this.handleChange}

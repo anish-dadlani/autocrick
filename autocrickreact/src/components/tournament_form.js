@@ -11,7 +11,6 @@ import "../assets/styles.css";
 import SuccessMessage from "../includes/success";
 import ErrorMessage from "../includes/error";
 import Dropzone from "react-dropzone";
-import axios from "axios";
 
 export default class Tournament extends Component {
   constructor(props) {
@@ -20,7 +19,6 @@ export default class Tournament extends Component {
       title: "",
       description: "",
       file_path: "",
-      uploadProgress: 0,
       no_of_matches: "",
       latitude: "76.7878",
       longitude: "344.7676",
@@ -187,7 +185,6 @@ export default class Tournament extends Component {
       end_date,
       _id,
       file_path,
-      uploadProgress,
     } = this.state;
     const fileName = file_path && file_path.name;
     return (
@@ -308,7 +305,6 @@ export default class Tournament extends Component {
                       {fileName && (
                         <div>
                           <p>Selected file: {fileName}</p>
-                          <div>Upload progress: {uploadProgress}%</div>
                         </div>
                       )}
                       <br></br>
@@ -332,6 +328,11 @@ const styles = {
   container: {
     display: "flex",
     minHeight: "100vh",
+    /* backgroundColor: "#f5f5f5", */
+	backgroundImage: `url('posts/background.jpg')`,
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
     backgroundColor: "#f5f5f5",
   },
   containerMain: {

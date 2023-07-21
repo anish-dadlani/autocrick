@@ -6,7 +6,6 @@ import {
   get_team_players_by_team_id,
   matchDetailsSave,
   getUsers,
-  getMatches,
   getTournaments,
   get_matches_by_tournament_id,
   getMatcheDetailsById,
@@ -923,6 +922,11 @@ const styles = {
   container: {
     display: "flex",
     minHeight: "100vh",
+    /* backgroundColor: "#f5f5f5", */
+	backgroundImage: `url('posts/background.jpg')`,
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
     backgroundColor: "#f5f5f5",
   },
   containerMain: {

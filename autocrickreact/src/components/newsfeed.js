@@ -22,7 +22,7 @@ export default class NewsFeed extends Component {
   }
 
   render() {
-    const { posts, userNames } = this.state;
+    const { posts } = this.state;
     return (
       <div>
         <HeaderBar />
@@ -186,6 +186,11 @@ const styles = {
   container: {
     display: "flex",
     minHeight: "100vh",
+    /* backgroundColor: "#f5f5f5", */
+	backgroundImage: `url('posts/background.jpg')`,
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
     backgroundColor: "#f5f5f5",
   },
   containerMain: {
