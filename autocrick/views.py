@@ -914,48 +914,108 @@ def get_tournament_schedule(request):
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
 
+
 @api_view(['GET'])
 def get_tournament_stats(request):
     try:
         tournament_id = request.GET.get('tournament_id')
 
-        # Retrieve team IDs from pending requests for the given tournament ID
-        pending_requests = PendingRequest.objects.filter(tournament_id=tournament_id, status=1)
-        serialized_pending_requests = PendingRequestSerializer(pending_requests, many=True).data
+        # Step 1: Get the matches based on tournament_id
+        matches = Matches.objects.filter(tournament_id=tournament_id)
 
-        team_stats = {}  # Initialize an empty dictionary
+        # Step 2: Create a dictionary to store team IDs and their associated details
+        team_details = {}
 
-        serialized_teams = []  # Store serialized teams data in a list
-        
-        for pr in serialized_pending_requests:
-            team_id = ObjectId(pr['team_id'])
-            # Filter teams based on the retrieved team IDs
-            teams = Team.objects.filter(_id=team_id)
+        # Step 3: Create a dictionary to store team IDs and their total matches count
+        team_total_matches = {}
 
-            serialized_team = TeamsSerializer(teams[0]).data  # Assuming there's only one team for each ID
-            serialized_teams.append(serialized_team)
+        # Step 4: Create a dictionary to store team IDs and their won matches count
+        team_won_matches = {}
 
-            # Initialize team statistics dictionary with team IDs as keys
-            team_stats[team_id] = {
-                'team_title': serialized_team['title'],
-                'total_matches': 0,
-                'won_matches': 0,
-                'lost_matches': 0,
-                'runs': 0,
-                'ratings': 0
-            }
+        # Step 5: Iterate through each match and get the team details (IDs and titles)
+        for match in matches:
+            team1_id = str(match.team_id1)
+            team2_id = str(match.team_id2)
+            team1 = Team.objects.get(_id=ObjectId(team1_id))
+            team2 = Team.objects.get(_id=ObjectId(team2_id))
 
-        # Rest of the code remains the same
+            # Update total matches count for each team
+            team_total_matches[team1_id] = team_total_matches.get(team1_id, 0) + 1
+            team_total_matches[team2_id] = team_total_matches.get(team2_id, 0) + 1
 
-        # Calculate lost matches count for each team
-        for team_id, stats in team_stats.items():
-            stats['lost_matches'] = stats['total_matches'] - stats['won_matches']
+            # Add team details to the team_details dictionary
+            if team1_id not in team_details:
+                team_details[team1_id] = {
+                    'team_id': team1_id,
+                    'team_title': team1.title,
+                    'total_matches': 0,
+                    'won_matches': 0,
+                    'lost_matches': 0,
+                    'runs': 0,
+                    'ratings': 0
+                }
 
-        # Prepare the final response with team statistics
-        response = list(team_stats.values())
+            if team2_id not in team_details:
+                team_details[team2_id] = {
+                    'team_id': team2_id,
+                    'team_title': team2.title,
+                    'total_matches': 0,
+                    'won_matches': 0,
+                    'lost_matches': 0,
+                    'runs': 0,
+                    'ratings': 0
+                }
 
-        return Response({'response': True, 'team_stats': response})
+            # Calculate won and lost matches count for each team
+            match_innings = MatchInnings.objects.filter(match_id=str(match._id))
+            for innings in match_innings:
+                team_won_id = str(innings.team_won)
+                if team_won_id == team1_id:
+                    team_details[team1_id]['won_matches'] += 1
+                elif team_won_id == team2_id:
+                    team_details[team2_id]['won_matches'] += 1
+
+                # Calculate total score for each team based on innings information
+                if str(innings.team_first_innings) == team1_id:
+                    team_details[team1_id]['runs'] += int(innings.target)
+                elif str(innings.team_second_innings) == team1_id:
+                    team_details[team1_id]['runs'] += int(innings.achieved)
+
+                if str(innings.team_first_innings) == team2_id:
+                    team_details[team2_id]['runs'] += int(innings.target)
+                elif str(innings.team_second_innings) == team2_id:
+                    team_details[team2_id]['runs'] += int(innings.achieved)
+
+            # Calculate lost matches count for each team
+            if match_innings.count() == 0:
+                team_details[team1_id]['lost_matches'] += 1
+                team_details[team2_id]['lost_matches'] += 1
+            else:
+                for team_id in [team1_id, team2_id]:
+                    if str(match_innings.first().team_won) != team_id:
+                        team_details[team_id]['lost_matches'] += 1
+
+        # Step 6: Update the total matches count in the team_details dictionary
+        for match in matches:
+            team1_id = str(match.team_id1)
+            team2_id = str(match.team_id2)
+
+            team_details[team1_id]['total_matches'] += 1
+            team_details[team2_id]['total_matches'] += 1
+            
+        # Step 7: Calculate ratings for each team
+        for team_id, details in team_details.items():
+            total_points = details['won_matches'] * 3 + details['lost_matches']
+            total_matches = details['total_matches']
+            details['ratings'] = total_points / total_matches
+            
+        # Prepare the final response with team IDs and their associated details
+        response = {
+            'response': True,
+            'team_stats': list(team_details.values())
+        }
+
+        return Response(response)
 
     except Exception as e:
         return Response({'response': False, 'error': str(e)})
-
